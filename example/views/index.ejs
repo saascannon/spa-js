@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@saascannon/spa Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1 {
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 10px;
+      }
+      h2 {
+        color: #555;
+      }
+      p {
+        color: #666;
+        font-size: 1em;
+        line-height: 1.5;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin-right: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #user-info {
+        margin-top: 20px;
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 5px;
+      }
+    </style>
+    <script src="/sdk.js" defer></script>
+    <script defer>
+
+      // Format timestamp to local time
+      function formatLocalTime(unixTimestamp) {
+        const date = new Date(unixTimestamp * 1000);
+        return date.toLocaleString();
+      }
+
+      function createUserInnerHtml(user) {
+        return `
+            <p><strong>Name:</strong> ${user.name}</p>
+            <p><strong>Email:</strong> ${user.email} (${user.email_verified ? 'verified' : 'unverified'})</p>
+            <p><strong>User ID:</strong> ${user.id}</p>
+            <p><strong>Auth Time:</strong> ${formatLocalTime(user.auth_time)}</p>
+            <p><strong>Access Token Expires:</strong> ${formatLocalTime(user.exp)}</p>
+          `;
+      }
+
+      window.onload = async () => {
+        console.debug("Document Loaded");
+
+        const saascannonSpaSdk = new SaascannonSpaSdk({
+          clientId: "<%=config.clientId%>",
+          domain: "<%=config.domain%>",
+          uiBaseUrl: "<%=config.uiBaseUrl%>",
+          redirectUri: window.location.origin,
+          afterCallback: () => {
+            history.replaceState({}, null, window.location.origin);
+          },
+        });
+
+        await saascannonSpaSdk.loadAuthState();
+
+        const user = saascannonSpaSdk.user;
+
+        const loginBtn = document.getElementById("login-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+
+        function login() {
+          saascannonSpaSdk.loginViaRedirect();
+        }
+
+        function logout() {
+          saascannonSpaSdk.logoutViaRedirect(window.location.origin);
+        }
+
+        // Check if the user is logged in
+        if (user) {
+          // Hide login button and show logout button
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+
+          // Show user info
+          const userInfoDiv = document.getElementById("user-info");
+          userInfoDiv.innerHTML = createUserInnerHtml(user);
+
+          saascannonSpaSdk.accountManagement.on('account-updated', () => {
+            userInfoDiv.innerHTML = createUserInnerHtml(saascannonSpaSdk.user);
+          });
+
+          userInfoDiv.style.display = "block";
+
+          // Show account management and shop buttons
+          const accountBtn = document.getElementById("account-btn");
+          const shopBtn = document.getElementById("shop-btn");
+          accountBtn.style.display = "inline-block";
+          shopBtn.style.display = "inline-block";
+
+          accountBtn.addEventListener("click", () => {
+            saascannonSpaSdk.accountManagement.open(); // Open account management modal
+          });
+
+          shopBtn.addEventListener("click", () => {
+            saascannonSpaSdk.shopManagement.open(user.user_billable_id); // Open shop modal
+          });
+        } else {
+          // Show login button and hide logout button
+          loginBtn.style.display = "inline-block";
+          logoutBtn.style.display = "none";
+        }
+
+        // Bind login and logout buttons
+        loginBtn.addEventListener("click", login);
+        logoutBtn.addEventListener("click", logout);
+      };
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>@saascannon/spa Example App</h1>
+      <p>This is an example application that demonstrates the functionalities of the <a href="https://npmjs.com/package/@saascannon/spa" target="_blank">@saascannon/spa</a> package in a minimal form.</p>
+      
+      <!-- Login/Logout buttons -->
+      <button id="login-btn" style="display: none">Login</button>
+      <button id="logout-btn" style="display: none">Logout</button>
+      <!-- Account and Shop buttons -->
+      <button id="account-btn" style="display: none">Account Management</button>
+      <button id="shop-btn" style="display: none">Shop</button>
+
+      <!-- User info and management buttons -->
+      <div id="user-info" style="display: none"></div>
+
+      
+    </div>
+  </body>
+</html>

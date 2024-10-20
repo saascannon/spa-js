@@ -1,0 +1,50 @@
+{
+  "name": "@saascannon/spa",
+  "version": "0.0.6",
+  "description": "Saascannon SPA SDK for easy integration with the Saascannon service from Single Page Applications",
+  "main": "dist/node/index.cjs",
+  "module": "dist/node/index.js",
+  "types": "dist/node/index.d.ts",
+  "type": "module",
+  "author": {
+    "name": "Saascannon",
+    "email": "support@saascannon.com",
+    "url": "https://saascannon.com"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "saascannon",
+    "saas",
+    "spa",
+    "single page application"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist/node",
+    "dist/browser"
+  ],
+  "dependencies": {
+    "oauth4webapi": "^2.3.0"
+  },
+  "devDependencies": {
+    "@saascannon/account-management-js": "0.0.1",
+    "tsup": "^8.3.0"
+  },
+  "browser": "./dist/browser/index.global.js",
+  "unpkg": "./dist/browser/index.global.js",
+  "exports": {
+    ".": {
+      "require": "./dist/node/index.cjs",
+      "import": "./dist/node/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://github.com/saascannon/spa-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saascannon/spa-js.git"
+  }
+}
