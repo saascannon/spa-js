@@ -1,6 +1,6 @@
 {
   "name": "@saascannon/spa",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Saascannon SPA SDK for easy integration with the Saascannon service from Single Page Applications",
   "main": "dist/node/index.cjs",
   "module": "dist/node/index.js",
