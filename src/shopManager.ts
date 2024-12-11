@@ -116,8 +116,7 @@ class ShopManager {
               this.sdk.accountManagement.api[
                 payload.resource as keyof typeof this.sdk.accountManagement.api
               ];
-
-            // @ts-expect-errork
+            // @ts-expect-error
             const result = await apiResource[
               payload.method as keyof typeof apiResource
             ](...(Array.isArray(payload.args) ? payload.args : []));
