@@ -1,0 +1,56 @@
+name: Create Release on Version Change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json" # Only trigger if package.json changes
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get previous version
+        id: prev_version
+        run: echo "PREV_VERSION=$(git show HEAD~1:package.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Get new version
+        id: new_version
+        run: echo "NEW_VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: check_version
+        run: |
+          if [ ${{ steps.prev_version.outputs.PREV_VERSION }} != ${{ steps.new_version.outputs.NEW_VERSION }} ]; then
+            echo "Version change detected: ${{ steps.prev_version.outputs.PREV_VERSION }} -> ${{ steps.new_version.outputs.NEW_VERSION }}"
+            echo "version_changed=true" >> "$GITHUB_ENV"
+          else
+            echo "No version change, skipping release."
+            echo "version_changed=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Authenticate using GitHub App
+        if: env.version_changed == 'true'
+        id: get_installation_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.GH_APP_ID }}
+          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Release
+        if: env.version_changed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          body: "Release ${{ steps.prev_version.outputs.PREV_VERSION }} -> ${{ steps.new_version.outputs.NEW_VERSION }}"
+          tag_name: v${{ steps.new_version.outputs.NEW_VERSION }}
+          token: ${{ steps.get_installation_token.outputs.token }}
