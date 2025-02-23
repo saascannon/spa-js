@@ -32,7 +32,8 @@
   },
   "devDependencies": {
     "@saascannon/account-management-js": "^0.0.4",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.3"
   },
   "browser": "./dist/browser/index.global.js",
   "unpkg": "./dist/browser/index.global.js",
