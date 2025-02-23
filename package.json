@@ -1,6 +1,6 @@
 {
   "name": "@saascannon/spa",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Saascannon SPA SDK for easy integration with the Saascannon service from Single Page Applications",
   "main": "dist/node/index.cjs",
   "module": "dist/node/index.js",
@@ -31,7 +31,7 @@
     "oauth4webapi": "^2.3.0"
   },
   "devDependencies": {
-    "@saascannon/account-management-js": "0.0.3",
+    "@saascannon/account-management-js": "^0.0.4",
     "tsup": "^8.3.0"
   },
   "browser": "./dist/browser/index.global.js",
